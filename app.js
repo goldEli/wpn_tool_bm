@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/usersRoutes');
+var goodsRoutes = require('./routes/goodsRoutes')
 
 var app = express();
 
@@ -17,10 +19,35 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret:'asdfsadsdf',
+  resave: false,
+  saveUninitialized: true,
+  // cookie: {maxAge: 14*24*60*60*1000} // 14 天
+}));
+app.use(express.static(path.join(__dirname, 'public/build')));
+
+app.use(function(req, res, next) {
+  // 第一次登陆
+  if (req.url === '/users/login') {
+    if (req.session && req.session.user) {
+      res.json({status:2,data:{url:'home'}})
+    } else {
+      next();
+    }
+    return;
+  }
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    // next();
+    res.json({status:2,data:{url:'login'}})
+  }
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/goods',goodsRoutes)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
