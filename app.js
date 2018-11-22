@@ -28,7 +28,10 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public/build')));
 
 app.use(function(req, res, next) {
-  // 第一次登陆
+  if (req.url === '/goods/queryAll') {
+    next();
+    return
+  }
   if (req.url === '/users/login') {
     if (req.session && req.session.user) {
       res.json({status:2,data:{url:'home'}})

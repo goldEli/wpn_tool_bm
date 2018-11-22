@@ -4,14 +4,19 @@ var goodsServers = require("../servers/goodsServers/goodsServers");
 
 router.post("/queryAll", function(req, res, next) {
   goodsServers.queryAllGoods(function(data) {
-    res.json(data);
+    res.send(data);
+  });
+});
+
+router.get("/queryAll", function(req, res, next) {
+  goodsServers.queryAllGoods(function(data) {
+    res.send(data);
   });
 });
 
 router.post("/add", function(req, res, next) {
   var { name, price, src, spec, index, checked, unit } = req.body;
   var addParams = [name, price, src, spec, index, checked, unit];
-  console.log(addParams);
 
   goodsServers.addGoods(addParams, function(data) {
     res.json(data);
