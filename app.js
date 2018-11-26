@@ -37,7 +37,8 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public/build')));
 
 app.use(function(req, res, next) {
-  if (req.url === '/goods/queryAll') {
+  var urls = ['/goods/queryAll', '/users/logs']
+  if (urls.includes(req.url)) {
     next();
     return
   }
